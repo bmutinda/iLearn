@@ -1,11 +1,13 @@
 package net.rebmos.ilearn;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.rebmos.ilearn.callbacks.TimerCallback;
 import net.rebmos.ilearn.entities.DictionaryWord;
+import net.rebmos.ilearn.entities.Score;
+import net.rebmos.ilearn.entities.Scores;
 import net.rebmos.ilearn.entities.ui.ImageViewOpacity;
-import net.rebmos.ilearn.entities.ui.ToastAlert;
 import net.rebmos.ilearn.utilities.AppLogger;
 import net.rebmos.ilearn.utilities.Constants;
 import net.rebmos.ilearn.utilities.ILearnApplication;
@@ -15,8 +17,8 @@ import net.rebmos.ilearn.utilities.Utils;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,14 +31,20 @@ import android.widget.TextView;
 public class GameActivity extends Activity {
 	Activity activity;
 	Utils utils;
+	Scores scores;
 
-	TextView txtTimer, txtAnimalDescripstion;
-	ImageView imgAnimal, btnStart, btnNext, btnExit, gameOver;
+	TextView txtTimer, txtAnimalDescripstion, txtScore, txtScoreLabel;
+	ImageView imgAnimal, btnStart, btnNext, btnExit, gameOver, correct,
+			inCorrect;
 
 	ArrayList<ImageView> answerImages;
 
 	// Holds all our dictionary words for the game
 	ArrayList<DictionaryWord> dictionaryWords;
+	
+	// Holds answered questions and status -won or failed
+	// format - [ WORD->true/false ] , [ .... ]
+	ArrayList<HashMap<DictionaryWord, Boolean>> answeredQuestions;
 
 	// Holds the active word the player is answering
 	DictionaryWord currentWord;
@@ -54,26 +62,39 @@ public class GameActivity extends Activity {
 	// Popup for game over, animal short description, navigation buttons
 	RelativeLayout popup;
 
+	// Holds the current question timer
+	TickTimer timer;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		activity = this;
+		// Make full screen
 		Utils.setFullScreen(activity);
+		// keep screen awake always
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		setContentView(R.layout.layout_game);
 
 		utils = new Utils(activity);
+		scores = new Scores();
 
 		soundPlayer = new SoundPlayer(activity);
 		answerImages = new ArrayList<ImageView>();
 		dictionaryWords = new ArrayList<DictionaryWord>();
+		answeredQuestions = new ArrayList<HashMap<DictionaryWord,Boolean>>();
 
 		txtTimer = (TextView) findViewById(R.id.txtTimer);
 		txtAnimalDescripstion = (TextView) findViewById(R.id.txtAnimalDescripstion);
+		txtScore = (TextView) findViewById(R.id.txtScore);
+		txtScoreLabel = (TextView) findViewById(R.id.txtScoreLabel);
 		imgAnimal = (ImageView) findViewById(R.id.animal);
 		gameOver = (ImageView) findViewById(R.id.gameOver);
 		btnStart = (ImageView) findViewById(R.id.btnStart);
 		btnNext = (ImageView) findViewById(R.id.btnNext);
 		btnExit = (ImageView) findViewById(R.id.btnExit);
+		correct = (ImageView) findViewById(R.id.correct);
+		inCorrect = (ImageView) findViewById(R.id.incorrect);
 		popup = (RelativeLayout) findViewById(R.id.popup);
 
 		txtTimer.setText("0");
@@ -86,30 +107,6 @@ public class GameActivity extends Activity {
 		}
 
 		restartGame();
-
-		new TickTimer(Constants.TIME_TO_ANSWER, Constants.TIMER_TICK)
-				.start(new TimerCallback() {
-
-					@Override
-					public void onUpdate(final int elapsed) {
-						activity.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								updateTimerUI(elapsed);
-							}
-						});
-					}
-
-					@Override
-					public void onComplete() {
-						activity.runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								resetTimerUI();
-							}
-						});
-					}
-				});
 	}
 
 	/**
@@ -124,23 +121,50 @@ public class GameActivity extends Activity {
 			new ImageViewOpacity(clickedImg).apply(false);
 
 			final boolean won = this.wonQuestion(view.getTag() + "");
-
+			
+			saveAnsweredQuestion( won );
+			
 			if (won) {
+				stopTimer();
+
 				this.playCorrectSound();
 				// this.goToNextQuestion();
 				updateCurrentAnimalDescriptionUI();
+				hideGameOver();
+				hideInCorrect();
+
 				showNextButton();
 				showAnimalDescription();
-				hideGameOver();
-				showPopup();
+
+				// The label is only visible for 1 second
+				showCorrect();
+
+				// Open popup after 1 second
+				new TickTimer(1000, 500).start(new TimerCallback() {
+					@Override
+					public void onUpdate(int elapsed) {
+					}
+
+					@Override
+					public void onComplete() {
+						activity.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								showPopup();
+							}
+						});
+					}
+				});
 			} else {
+				// Only visible for 1 second
+				showInCorrect();
 				this.playIncorrectSound();
 			}
 		} else if (this.GAME_OVER) {
 			this.showSessionOver();
 		} else {
-			new ToastAlert(activity, "Cannot play....waitt...")
-					.show(Gravity.CENTER);
+			/*new ToastAlert(activity, "Cannot play....waitt...")
+				//	.show(Gravity.CENTER); */
 		}
 	}
 
@@ -181,6 +205,9 @@ public class GameActivity extends Activity {
 	public void restartGame() {
 
 		hidePopup();
+		hideCorrect();
+		hideInCorrect();
+		hideScore();
 
 		clearGameSession();
 
@@ -200,6 +227,8 @@ public class GameActivity extends Activity {
 		// Now continue to load the first question ready to play
 		loadCurrentQuestion();
 
+		startTimer();
+
 		this.CAN_PLAY = true;
 	}
 
@@ -208,6 +237,8 @@ public class GameActivity extends Activity {
 		this.currentWord = null;
 		this.GAME_OVER = false;
 		this.CAN_PLAY = false;
+		this.answeredQuestions.clear();
+		this.scores.clearScores();
 	}
 
 	public void drawAllAnswerImages() {
@@ -229,7 +260,6 @@ public class GameActivity extends Activity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public void loadCurrentQuestion() {
@@ -251,14 +281,65 @@ public class GameActivity extends Activity {
 			this.loadCurrentQuestion();
 			this.CAN_PLAY = true;
 			this.hidePopup();
+			this.hideCorrect();
+			this.hideInCorrect();
+			startTimer();
 		} else {
 			this.GAME_OVER = true;
 			this.showSessionOver();
 		}
 	}
 
-	public void repeatQuestion() {
 
+	/**
+	 * Keeps timer for each question such that someone does not stay forever in
+	 * the same question -- max 10 seconds per question
+	 */
+	public void startTimer() {
+
+		stopTimer();
+
+		timer = new TickTimer(Constants.TIME_TO_ANSWER, Constants.TIMER_TICK);
+
+		timer.start(new TimerCallback() {
+			@Override
+			public void onUpdate(final int elapsed) {
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						updateTimerUI(elapsed);
+					}
+				});
+			}
+
+			@Override
+			public void onComplete() {
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							resetTimerUI();
+							playIncorrectSound();
+							goToNextQuestion();
+
+							saveAnsweredQuestion( false );
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+					}
+				});
+			}
+		});
+	}
+
+	public void stopTimer() {
+		try {
+			timer.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public DictionaryWord getCurrentQuestion() {
@@ -271,6 +352,25 @@ public class GameActivity extends Activity {
 							+ e.getMessage());
 		}
 		return currentQuestion;
+	}
+	
+	public void saveAnsweredQuestion( boolean won ){
+		HashMap<DictionaryWord, Boolean> map = new HashMap<DictionaryWord, Boolean>();
+		map.put( this.getCurrentQuestion() , won );
+		answeredQuestions.add(map);
+		
+		// save this score 
+		Score score = new Score( this.getCurrentQuestion(), won );
+		score.save();
+		scores.addScore(score);
+	}
+	
+	public int calculatePercentageScore( ){
+		AppLogger.logError( "Passed = "+scores.countPassed() );
+		AppLogger.logError( "Failed = "+scores.countFailed() );
+		double win_percentage = (double) (scores.countPassed()/5.0)*100;
+		int percent = (int) Math.round(win_percentage);
+		return percent;
 	}
 
 	/**
@@ -296,12 +396,11 @@ public class GameActivity extends Activity {
 	}
 
 	public void showSessionOver() {
-		new ToastAlert(activity, "Game is Over...total score")
-				.show(Gravity.CENTER);
-
 		hideNextButton();
 		hideAnimalDescription();
 		showGameOver();
+		showPercentageScore();
+		showPopup();
 	}
 
 	/***** -----------------[ POPUP METHODS ]-------------------------- *******/
@@ -336,13 +435,75 @@ public class GameActivity extends Activity {
 	public void hideNextButton() {
 		btnNext.setVisibility(View.GONE);
 	}
-	
+
 	public void showGameOver() {
 		gameOver.setVisibility(View.VISIBLE);
 	}
-	
+
 	public void hideGameOver() {
 		gameOver.setVisibility(View.GONE);
+	}
+
+	public void showCorrect() {
+		correct.setVisibility(View.VISIBLE);
+		// Hide after 1 second
+		new TickTimer(1000, 50).start(new TimerCallback() {
+			@Override
+			public void onUpdate(int elapsed) {
+			}
+
+			@Override
+			public void onComplete() {
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						hideCorrect();
+					}
+				});
+			}
+		});
+	}
+
+	public void hideCorrect() {
+		correct.setVisibility(View.GONE);
+	}
+
+	public void showInCorrect() {
+		inCorrect.setVisibility(View.VISIBLE);
+		// Hide after 1 second
+		new TickTimer(1000, 50).start(new TimerCallback() {
+			@Override
+			public void onUpdate(int elapsed) {
+			}
+
+			@Override
+			public void onComplete() {
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						hideInCorrect();
+					}
+				});
+			}
+		});
+	}
+
+	public void hideInCorrect() {
+		inCorrect.setVisibility(View.GONE);
+	}
+	
+	public void showScore() {
+		txtScoreLabel.setVisibility(View.VISIBLE );
+		txtScore.setVisibility(View.VISIBLE );
+	}
+	public void hideScore() {
+		txtScoreLabel.setVisibility(View.GONE);
+		txtScore.setVisibility(View.GONE);
+	}
+	
+	public void showPercentageScore( ){
+		txtScore.setText( this.calculatePercentageScore()+"%" );
+		showScore();
 	}
 
 }

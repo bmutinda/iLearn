@@ -10,12 +10,17 @@ import android.content.res.Resources;
 public class ILearnApplication extends Application {
 
 	public static Context context;
+	public static DatabaseManager database;
 	public static Dictionary dictionary;
+	public static SoundPlayer player;
+	public static String userName;
 
 	@Override
 	public void onCreate() {
 		ILearnApplication.context = getApplicationContext();
 		ILearnApplication.dictionary = new Dictionary();
+		ILearnApplication.database = new DatabaseManager(getApplicationContext());
+		ILearnApplication.userName = "GUEST";
 		
 		Resources resources = getResources();
 		/**

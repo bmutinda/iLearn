@@ -14,6 +14,17 @@ public interface Constants {
 	public static final String KEY_ID = "id";
 	public static final String KEY_DATE_CREATED = "date_created";
 	
+	/**
+	 * Database tables and columns
+	 */
+	public static final String USERS_TAG = "users";
+	public static final String USER_NAME_TAG = "fullnames";
+	
+	public static final String SETTINGS_TAG = "settings";
+	
+	public static final String KEY_SETTING_KEY_TAG = "setting_key";
+	public static final String KEY_SETTING_VALUE_TAG = "setting_value";
+	
 	
 	/**
 	 * Application images directory

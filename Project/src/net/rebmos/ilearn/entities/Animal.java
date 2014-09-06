@@ -1,13 +1,7 @@
 package net.rebmos.ilearn.entities;
 
-public class Animal {
-
-	public Animal() {
+public abstract class Animal {
+	public Animal(){
 		
 	}
-	
-	public void bark( ){
-		
-	}
-
 }
