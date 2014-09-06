@@ -6,7 +6,7 @@ import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 
-public class AssetsSoundPlayer {
+public class SoundPlayer {
 	public String fileName;
 
 	Activity activity;
@@ -14,14 +14,14 @@ public class AssetsSoundPlayer {
 	MediaPlayer player;
 	Utils utils;
 
-	public AssetsSoundPlayer(Activity activity) {
+	public SoundPlayer(Activity activity) {
 		this.activity = activity;
-		this.player = new MediaPlayer();
 		this.utils = new Utils(activity);
 	}
 
 	public void play(String fileName) {
 		try {
+			this.player = new MediaPlayer();
 			afd = activity.getAssets().openFd(
 					this.utils.getSoundsDirectory() + fileName);
 			player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(),

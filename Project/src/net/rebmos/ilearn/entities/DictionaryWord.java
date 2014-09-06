@@ -6,10 +6,16 @@ public class DictionaryWord {
 	public String word;
 	public String description;
 	public Drawable drawable;
+	public Drawable animal;
 	
-	public DictionaryWord( String word, String description, Drawable drawable ) {
+	public DictionaryWord( ){
+		
+	}
+	
+	public DictionaryWord( String word, String description, Drawable drawable, Drawable animal ) {
 		this.word = word;
 		this.description = description;
 		this.drawable = drawable;
+		this.animal = animal;
 	}
 }

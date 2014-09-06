@@ -4,79 +4,80 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_game"
     android:orientation="vertical" >
-    
-    <ImageView 
+
+    <ImageView
         android:id="@+id/timerBg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/bg_timer"
+        android:layout_centerHorizontal="true"
         android:contentDescription="@string/app_name"
-        android:layout_centerHorizontal="true"/>
-    
-    <TextView 
+        android:src="@drawable/bg_timer" />
+
+    <TextView
         android:id="@+id/txtTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:text="10"
         android:textColor="#fff"
         android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"/>
-    
-    <ImageView 
+        android:textStyle="bold" />
+
+    <ImageView
         android:id="@+id/answer1"
         style="@style/answerImage"
-        android:src="@drawable/btn_answer"
+        android:layout_alignParentLeft="true"
         android:contentDescription="@string/app_name"
-		android:layout_alignParentLeft="true"
-		android:paddingLeft="3dp"
-		android:paddingTop="3dp"/>
-    
-    <ImageView 
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp"
+        android:src="@drawable/btn_answer" />
+
+    <ImageView
         android:id="@+id/answer2"
         style="@style/answerImage"
-        android:src="@drawable/btn_answer"
+        android:layout_alignParentRight="true"
         android:contentDescription="@string/app_name"
-		android:layout_alignParentRight="true"
-		android:paddingRight="3dp"
-		android:paddingTop="3dp"/>
-    
-    <ImageView 
+        android:paddingRight="3dp"
+        android:paddingTop="3dp"
+        android:src="@drawable/btn_answer" />
+
+    <ImageView
         android:id="@+id/answer3"
         style="@style/answerImage"
-        android:src="@drawable/btn_answer"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:contentDescription="@string/app_name"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentBottom="true"
-		android:paddingLeft="3dp"
-		android:paddingBottom="3dp"/>
-    
-    <ImageView 
+        android:paddingBottom="3dp"
+        android:paddingLeft="3dp"
+        android:src="@drawable/btn_answer" />
+
+    <ImageView
         android:id="@+id/answer4"
         style="@style/answerImage"
-        android:src="@drawable/btn_answer"
-        android:contentDescription="@string/app_name"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-		android:layout_alignParentBottom="true"
-		android:paddingBottom="3dp"/>
-    
-    <ImageView 
+        android:contentDescription="@string/app_name"
+        android:paddingBottom="3dp"
+        android:src="@drawable/btn_answer" />
+
+    <ImageView
         android:id="@+id/answer5"
         style="@style/answerImage"
-        android:src="@drawable/btn_answer"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:contentDescription="@string/app_name"
-		android:layout_alignParentRight="true"
-		android:layout_alignParentBottom="true"
-		android:paddingRight="3dp"
-		android:paddingBottom="3dp"/>
+        android:paddingBottom="3dp"
+        android:paddingRight="3dp"
+        android:src="@drawable/btn_answer" />
     
-     <ImageView 
+    <ImageView
         android:id="@+id/animal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/zebra"
+        android:layout_marginBottom="20dp"
         android:contentDescription="@string/app_name"
-		android:layout_centerInParent="true"/>
-     
+        android:layout_centerInParent="true"
+        android:src="@drawable/dog" />
+    
 
 </RelativeLayout>
