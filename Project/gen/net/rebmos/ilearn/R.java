@@ -29,25 +29,36 @@ public final class R {
         public static final int btn_answer=0x7f020002;
         public static final int btn_cow=0x7f020003;
         public static final int btn_dog=0x7f020004;
-        public static final int btn_lion=0x7f020005;
-        public static final int btn_ram=0x7f020006;
-        public static final int btn_zebra=0x7f020007;
-        public static final int cow=0x7f020008;
-        public static final int dog=0x7f020009;
-        public static final int ic_launcher=0x7f02000a;
-        public static final int lion=0x7f02000b;
-        public static final int ram=0x7f02000c;
-        public static final int zebra=0x7f02000d;
+        public static final int btn_exit=0x7f020005;
+        public static final int btn_lion=0x7f020006;
+        public static final int btn_next=0x7f020007;
+        public static final int btn_ram=0x7f020008;
+        public static final int btn_start=0x7f020009;
+        public static final int btn_zebra=0x7f02000a;
+        public static final int cow=0x7f02000b;
+        public static final int dog=0x7f02000c;
+        public static final int game_over=0x7f02000d;
+        public static final int ic_launcher=0x7f02000e;
+        public static final int lion=0x7f02000f;
+        public static final int popup_background=0x7f020010;
+        public static final int ram=0x7f020011;
+        public static final int zebra=0x7f020012;
     }
     public static final class id {
-        public static final int action_settings=0x7f090008;
+        public static final int action_settings=0x7f09000e;
         public static final int animal=0x7f090007;
         public static final int answer1=0x7f090002;
         public static final int answer2=0x7f090003;
         public static final int answer3=0x7f090004;
         public static final int answer4=0x7f090005;
         public static final int answer5=0x7f090006;
+        public static final int btnExit=0x7f09000d;
+        public static final int btnNext=0x7f09000c;
+        public static final int btnStart=0x7f09000b;
+        public static final int gameOver=0x7f09000a;
+        public static final int popup=0x7f090008;
         public static final int timerBg=0x7f090000;
+        public static final int txtAnimalDescripstion=0x7f090009;
         public static final int txtTimer=0x7f090001;
     }
     public static final class layout {

@@ -7,9 +7,9 @@ import net.rebmos.ilearn.entities.DictionaryWord;
 import net.rebmos.ilearn.entities.ui.ImageViewOpacity;
 import net.rebmos.ilearn.entities.ui.ToastAlert;
 import net.rebmos.ilearn.utilities.AppLogger;
-import net.rebmos.ilearn.utilities.SoundPlayer;
 import net.rebmos.ilearn.utilities.Constants;
 import net.rebmos.ilearn.utilities.ILearnApplication;
+import net.rebmos.ilearn.utilities.SoundPlayer;
 import net.rebmos.ilearn.utilities.TickTimer;
 import net.rebmos.ilearn.utilities.Utils;
 import android.app.Activity;
@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -29,9 +30,9 @@ public class GameActivity extends Activity {
 	Activity activity;
 	Utils utils;
 
-	TextView txtTimer;
-	ImageView imgAnimal;
-	
+	TextView txtTimer, txtAnimalDescripstion;
+	ImageView imgAnimal, btnStart, btnNext, btnExit, gameOver;
+
 	ArrayList<ImageView> answerImages;
 
 	// Holds all our dictionary words for the game
@@ -45,9 +46,13 @@ public class GameActivity extends Activity {
 
 	// Plays sound from the application assets directory
 	SoundPlayer soundPlayer;
-	
-	// keeps game state 
+
+	// keeps game state
 	boolean GAME_OVER = false;
+	boolean CAN_PLAY = false;
+
+	// Popup for game over, animal short description, navigation buttons
+	RelativeLayout popup;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +68,14 @@ public class GameActivity extends Activity {
 		dictionaryWords = new ArrayList<DictionaryWord>();
 
 		txtTimer = (TextView) findViewById(R.id.txtTimer);
-		imgAnimal = (ImageView) findViewById(R.id.animal );
-		
+		txtAnimalDescripstion = (TextView) findViewById(R.id.txtAnimalDescripstion);
+		imgAnimal = (ImageView) findViewById(R.id.animal);
+		gameOver = (ImageView) findViewById(R.id.gameOver);
+		btnStart = (ImageView) findViewById(R.id.btnStart);
+		btnNext = (ImageView) findViewById(R.id.btnNext);
+		btnExit = (ImageView) findViewById(R.id.btnExit);
+		popup = (RelativeLayout) findViewById(R.id.popup);
+
 		txtTimer.setText("0");
 
 		// Add all our answer images to our main holder
@@ -107,25 +118,43 @@ public class GameActivity extends Activity {
 	 * @param view
 	 */
 	public void onAnswer(View view) {
-		
-		if( ! this.GAME_OVER ){
+
+		if (!this.GAME_OVER && this.CAN_PLAY) {
 			final ImageView clickedImg = (ImageView) view;
 			new ImageViewOpacity(clickedImg).apply(false);
-			
-			final boolean won = wonQuestion(view.getTag() + "");
-			
-			if( won ){
+
+			final boolean won = this.wonQuestion(view.getTag() + "");
+
+			if (won) {
 				this.playCorrectSound();
-				this.goToNextQuestion();
-			}else{
-				AppLogger.logError( "Oops! failed..." );
+				// this.goToNextQuestion();
+				updateCurrentAnimalDescriptionUI();
+				showNextButton();
+				showAnimalDescription();
+				hideGameOver();
+				showPopup();
+			} else {
 				this.playIncorrectSound();
 			}
-			
-			AppLogger.logError(view.getTag() + "::: won = "+won );
-		}else{
+		} else if (this.GAME_OVER) {
 			this.showSessionOver();
+		} else {
+			new ToastAlert(activity, "Cannot play....waitt...")
+					.show(Gravity.CENTER);
 		}
+	}
+
+	public void onStart(View view) {
+		this.restartGame();
+	}
+
+	public void onNext(View view) {
+		this.goToNextQuestion();
+	}
+
+	public void onExit(View view) {
+		this.finish();
+		moveTaskToBack(true);
 	}
 
 	/**
@@ -151,6 +180,8 @@ public class GameActivity extends Activity {
 	 */
 	public void restartGame() {
 
+		hidePopup();
+
 		clearGameSession();
 
 		// Randomize the words we have in our dictionary so that we don't
@@ -166,26 +197,29 @@ public class GameActivity extends Activity {
 			AppLogger.logError(word.word + " ->" + word.description);
 		}
 
-		// Now continue to load the first question ready to play 
+		// Now continue to load the first question ready to play
 		loadCurrentQuestion();
+
+		this.CAN_PLAY = true;
 	}
 
 	public void clearGameSession() {
 		this.currentQuestionNo = 1;
 		this.currentWord = null;
 		this.GAME_OVER = false;
+		this.CAN_PLAY = false;
 	}
 
 	public void drawAllAnswerImages() {
 		// set answers imageview tags to be the question answer
-		// one of them holds the correct answer 
-		
+		// one of them holds the correct answer
+
 		// To make sure nothing falls in the same place always
-		// we also shuffle the answer images to get different positions 
-		AppLogger.logError( "Before " +answerImages.toString() );
-		ArrayList<ImageView> randomAnswerImages = new ArrayList<ImageView>( answerImages );
-		randomAnswerImages = utils.generateRandomData(randomAnswerImages, randomAnswerImages.size() );
-		AppLogger.logError( "After " +randomAnswerImages.toString() );
+		// we also shuffle the answer images to get different positions
+		ArrayList<ImageView> randomAnswerImages = new ArrayList<ImageView>(
+				answerImages);
+		randomAnswerImages = utils.generateRandomData(randomAnswerImages,
+				randomAnswerImages.size());
 		try {
 			for (int i = 0; i < randomAnswerImages.size(); i++) {
 				randomAnswerImages.get(i).setTag(dictionaryWords.get(i).word);
@@ -200,13 +234,13 @@ public class GameActivity extends Activity {
 
 	public void loadCurrentQuestion() {
 		currentWord = this.getCurrentQuestion();
-		if( !TextUtils.isEmpty( currentWord.word )){
-			imgAnimal.setImageDrawable( currentWord.animal );
-			
-			// shuffle answer images also 
-			this.drawAllAnswerImages( );
-		}else{
-			AppLogger.logError( "No Current Question" );
+		if (!TextUtils.isEmpty(currentWord.word)) {
+			imgAnimal.setImageDrawable(currentWord.animal);
+
+			// shuffle answer images also
+			this.drawAllAnswerImages();
+		} else {
+			AppLogger.logError("No Current Question");
 			this.showSessionOver();
 		}
 	}
@@ -215,6 +249,8 @@ public class GameActivity extends Activity {
 		if (!finishedSession()) {
 			this.currentQuestionNo++;
 			this.loadCurrentQuestion();
+			this.CAN_PLAY = true;
+			this.hidePopup();
 		} else {
 			this.GAME_OVER = true;
 			this.showSessionOver();
@@ -224,7 +260,7 @@ public class GameActivity extends Activity {
 	public void repeatQuestion() {
 
 	}
-	
+
 	public DictionaryWord getCurrentQuestion() {
 		DictionaryWord currentQuestion = new DictionaryWord();
 		try {
@@ -236,15 +272,15 @@ public class GameActivity extends Activity {
 		}
 		return currentQuestion;
 	}
-	
+
 	/**
-	 * Determines whether the player has answered the current question correct 
-	 * or not 
+	 * Determines whether the player has answered the current question correct
+	 * or not
 	 * 
 	 * @return
 	 */
-	public boolean wonQuestion( String chosenAnswer ){
-		return currentWord.word.equalsIgnoreCase( chosenAnswer) ? true: false;
+	public boolean wonQuestion(String chosenAnswer) {
+		return currentWord.word.equalsIgnoreCase(chosenAnswer) ? true : false;
 	}
 
 	public boolean finishedSession() {
@@ -254,7 +290,7 @@ public class GameActivity extends Activity {
 	public void playIncorrectSound() {
 		soundPlayer.play("incorrect.mp3");
 	}
-	
+
 	public void playCorrectSound() {
 		soundPlayer.play("correct.mp3");
 	}
@@ -262,6 +298,51 @@ public class GameActivity extends Activity {
 	public void showSessionOver() {
 		new ToastAlert(activity, "Game is Over...total score")
 				.show(Gravity.CENTER);
+
+		hideNextButton();
+		hideAnimalDescription();
+		showGameOver();
+	}
+
+	/***** -----------------[ POPUP METHODS ]-------------------------- *******/
+
+	public void showPopup() {
+		popup.setVisibility(View.VISIBLE);
+		this.CAN_PLAY = false;
+	}
+
+	public void hidePopup() {
+		popup.setVisibility(View.GONE);
+	}
+
+	public void updateCurrentAnimalDescriptionUI() {
+		String description = this.getCurrentQuestion().description;
+		txtAnimalDescripstion.setText(TextUtils.isEmpty(description) ? ""
+				: description);
+	}
+
+	public void showAnimalDescription() {
+		txtAnimalDescripstion.setVisibility(View.VISIBLE);
+	}
+
+	public void hideAnimalDescription() {
+		txtAnimalDescripstion.setVisibility(View.GONE);
+	}
+
+	public void showNextButton() {
+		btnNext.setVisibility(View.VISIBLE);
+	}
+
+	public void hideNextButton() {
+		btnNext.setVisibility(View.GONE);
+	}
+	
+	public void showGameOver() {
+		gameOver.setVisibility(View.VISIBLE);
+	}
+	
+	public void hideGameOver() {
+		gameOver.setVisibility(View.GONE);
 	}
 
 }
