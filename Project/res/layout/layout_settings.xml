@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_game"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/popup"
+        android:layout_width="400dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/popup_background"
+        android:padding="20dp" >
+
+        <TextView
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your name: "
+            android:textColor="#242714" />
+
+        <LinearLayout
+            android:id="@+id/form_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="left"
+                android:orientation="horizontal" >
+
+                <!-- prevents default focus on edittext -->
+				<LinearLayout
+                    android:layout_width="0px"
+                    android:layout_height="0px"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="YOUR NAME:"
+                    android:textColor="#242714"
+                    android:textSize="20sp"
+                    android:paddingRight="10dp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/txtUserName"
+                    style="@style/entryBox"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="left"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TOGGLE SOUND:"
+                    android:textColor="#242714"
+                    android:textSize="20sp"
+                    android:paddingRight="10dp"
+                    android:textStyle="bold" />
+                
+                <ToggleButton
+                    android:id="@+id/soundToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:checked="true"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:clickable="true"
+            android:contentDescription="@string/app_name"
+            android:onClick="onSave"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:src="@drawable/btn_save" />
+
+        <ImageView
+            android:id="@+id/btnExit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:contentDescription="@string/app_name"
+            android:onClick="onExit"
+            android:paddingBottom="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/btn_exit" />
+    </RelativeLayout>
+
+</RelativeLayout>

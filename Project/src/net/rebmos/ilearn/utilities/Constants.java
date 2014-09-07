@@ -3,10 +3,10 @@ package net.rebmos.ilearn.utilities;
 public interface Constants {
 	
 	/**
-	 * URLs 
+	 * Backend API settings -----parse.com
 	 */
-	public static final String PROJECT_ROOT_URL = "http://rebmos.net/ilearn";
-	public static final String PROJECT_API_URL = PROJECT_ROOT_URL+"api/";
+	public static final String PARSE_APP_ID = "vnEYccYWiIkBtzbZcwRtz8J97t5FmOnCtIvXhGIu";
+	public static final String PARSE_APP_KEY = "eZlNuasyhFTFCfH13v6CEZkSkfjQWGjtGCdxiv7P";
 	
 	
 	public static final String MAC_ADDRESS_TAG = "device_mac_address";
@@ -20,10 +20,16 @@ public interface Constants {
 	public static final String USERS_TAG = "users";
 	public static final String USER_NAME_TAG = "fullnames";
 	
+	public static final String SCORES_TAG = "scores";
+	public static final String WORD_TAG = "word";
+	public static final String WON_TAG = "won";
+	
 	public static final String SETTINGS_TAG = "settings";
 	
 	public static final String KEY_SETTING_KEY_TAG = "setting_key";
 	public static final String KEY_SETTING_VALUE_TAG = "setting_value";
+	
+	public static final String SOUND_TAG = "sound";
 	
 	
 	/**

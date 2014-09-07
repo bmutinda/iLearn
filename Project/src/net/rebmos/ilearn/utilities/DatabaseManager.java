@@ -17,12 +17,13 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
 	Context context;
 
 	// Database Version
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	// Database Name
 	private static final String DATABASE_NAME = "REBMOS_ILEARN_APP";
 
 	// DATABASE tables
+	private static final String TABLE_SCORES = SCORES_TAG;
 	private static final String TABLE_USERS = USERS_TAG;
 	private static final String TABLE_SETTINGS = SETTINGS_TAG;
 	public DatabaseManager(Context c) {
@@ -41,6 +42,17 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
                 + KEY_DATE_CREATED + " TEXT"+
                 ")";
 		db.execSQL( create_users_table );	
+		
+		//Scores table 
+	    String create_scores_table = "CREATE TABLE " + TABLE_SCORES + "("
+                + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + USER_NAME_TAG + " TEXT," 
+                + WORD_TAG + " TEXT," 
+                + WON_TAG + " TEXT," 
+                + KEY_STATUS + " TEXT," 
+                + KEY_DATE_CREATED + " TEXT"+
+                ")";
+	    db.execSQL( create_scores_table );
 
 	    //Settings table 
 	    String create_settings_table = "CREATE TABLE " + TABLE_SETTINGS + "("
@@ -57,6 +69,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Drop older tables if existed
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS );
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCORES );
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SETTINGS );
 		onCreate(db);
 	}
@@ -145,7 +158,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
 	    db.delete( TABLE_USERS, USER_NAME_TAG+" = ? ",  new String[] { name});
 	    db.close();
 	    
-	    AppLogger.logError( "Deleting user....."+user_info.toString() );
 		return true;
 	}
 	
@@ -184,6 +196,30 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
 		return getUsers().size();
 	}
 	
+	/*** 
+	 * ---------------------------------------------------------------------------------------------------------------
+	 * Score Manipulations
+	 * --------------------------------------------------------------------------------------------------------------- 
+	 */
+	@SuppressLint("SimpleDateFormat")
+	public void addScore( HashMap<String, Object> info ){
+		SQLiteDatabase db = this.getWritableDatabase();
+		 
+	    ContentValues values = new ContentValues();
+	    values.put( USER_NAME_TAG, info.get(USER_NAME_TAG)+"") ;
+	    values.put( WORD_TAG, info.get(WORD_TAG)+"") ;
+	    values.put( WON_TAG, info.get(WON_TAG)+"") ;
+		values.put( KEY_STATUS, info.get( KEY_STATUS ) +"");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String strDate = sdf.format(new Date());
+		values.put( KEY_DATE_CREATED, strDate );
+		AppLogger.logError("Adding score with details...."+values.toString() );
+		db.insert(TABLE_SCORES, null, values);
+		db.close(); 
+	}
+	
+	
+	
 	
 	/**
 	 * Settings table manipulations 
@@ -218,7 +254,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
 			AppLogger.logError( "Adding setting... .."+setting_info.toString() );
 		}else{
 			// update the values specified ....
-			AppLogger.logError( "Updating readt .."+setting_info.toString() );
 			for( Entry<String, String> entry: setting_info.entrySet() ){
 				updateSetting( entry.getKey(), entry.getValue() );
 			}

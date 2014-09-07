@@ -48,7 +48,7 @@ public class Utils {
 		return new_random;
 	}
 	
-	public int generateRandomInt( int min, int max ){
+	public static int generateRandomInt( int min, int max ){
 		if( min<1 && max <1 ){
 			return 0;
 		}else{

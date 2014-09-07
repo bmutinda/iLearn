@@ -2,6 +2,7 @@ package net.rebmos.ilearn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.rebmos.ilearn.callbacks.TimerCallback;
 import net.rebmos.ilearn.entities.DictionaryWord;
@@ -177,8 +178,19 @@ public class GameActivity extends Activity {
 	}
 
 	public void onExit(View view) {
+		this.GAME_OVER = true;
 		this.finish();
 		moveTaskToBack(true);
+	}
+	
+	public void onHome(View view) {
+		this.GAME_OVER = true;
+		utils.redictToActivity(activity, SplashActivity.class );
+	}
+	
+	public void onSettings(View view) {
+		this.GAME_OVER = true;
+		utils.redictToActivity(activity, SettingsActivity.class );
 	}
 
 	/**
@@ -318,12 +330,15 @@ public class GameActivity extends Activity {
 					@Override
 					public void run() {
 						try {
-							resetTimerUI();
-							playIncorrectSound();
-							goToNextQuestion();
+							if( ! GAME_OVER ){
+								resetTimerUI();
+								playIncorrectSound();
+								goToNextQuestion();
 
-							saveAnsweredQuestion( false );
-							
+								saveAnsweredQuestion( false );
+							}else{
+								stopTimer();
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -392,7 +407,13 @@ public class GameActivity extends Activity {
 	}
 
 	public void playCorrectSound() {
-		soundPlayer.play("correct.mp3");
+		//soundPlayer.play("correct.mp3");
+		playAnimalSound( currentWord.word );
+	}
+	
+	public void playAnimalSound( String animal ){
+		AppLogger.logError( "Playing sound for "+animal );
+		soundPlayer.play( animal.toLowerCase(Locale.getDefault()).trim()+".mp3" );
 	}
 
 	public void showSessionOver() {

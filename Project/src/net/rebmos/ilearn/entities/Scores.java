@@ -33,4 +33,10 @@ public class Scores {
 		return failed;
 	}
 
+	public void saveAll( ){
+		for( Score score: scores ){
+			score.save();
+		}
+	}
+
 }

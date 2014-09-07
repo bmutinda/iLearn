@@ -23,5 +23,11 @@
         <item name="android:clickable">true</item>
         <item name="android:onClick">onAnswer</item>
     </style>
-
+	
+     <style name="entryBox">
+        <item name="android:background">@drawable/edit_text_drawable_state_list</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:textColor">#A39161</item>
+    </style>
+    
 </resources>
