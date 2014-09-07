@@ -385,6 +385,7 @@ public class GameActivity extends Activity {
 		AppLogger.logError( "Failed = "+scores.countFailed() );
 		double win_percentage = (double) (scores.countPassed()/5.0)*100;
 		int percent = (int) Math.round(win_percentage);
+		percent = percent>100? 100: percent;
 		return percent;
 	}
 
