@@ -332,7 +332,7 @@ public class GameActivity extends Activity {
 						try {
 							if( ! GAME_OVER ){
 								resetTimerUI();
-								playIncorrectSound();
+								playTimeOverSound();
 								goToNextQuestion();
 
 								saveAnsweredQuestion( false );
@@ -381,8 +381,6 @@ public class GameActivity extends Activity {
 	}
 	
 	public int calculatePercentageScore( ){
-		AppLogger.logError( "Passed = "+scores.countPassed() );
-		AppLogger.logError( "Failed = "+scores.countFailed() );
 		double win_percentage = (double) (scores.countPassed()/5.0)*100;
 		int percent = (int) Math.round(win_percentage);
 		percent = percent>100? 100: percent;
@@ -404,6 +402,10 @@ public class GameActivity extends Activity {
 	}
 
 	public void playIncorrectSound() {
+		soundPlayer.play("correct.mp3");
+	}
+	
+	public void playTimeOverSound() {
 		soundPlayer.play("incorrect.mp3");
 	}
 

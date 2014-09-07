@@ -30,25 +30,25 @@ public class ILearnApplication extends Application {
 		Resources resources = getResources();
 		
 		// Add in some words to our dictionary
-		DictionaryWord zebra = new DictionaryWord("Zebra", "Zebra Description",
+		DictionaryWord zebra = new DictionaryWord("Zebra", "A zebra is a wild animal.",
 				resources.getDrawable(R.drawable.btn_zebra) , resources.getDrawable( R.drawable.zebra ));
 		ILearnApplication.dictionary.addWord(zebra);
 
-		DictionaryWord dog = new DictionaryWord("Dog",
+		DictionaryWord dog = new DictionaryWord("A dog is a domestic animal. It protects humans at night",
 				"Dog Description", resources.getDrawable(
 						R.drawable.btn_dog), resources.getDrawable( R.drawable.dog ));
 		ILearnApplication.dictionary.addWord( dog );
 
-		DictionaryWord lion = new DictionaryWord("Lion", "Lion Description",
+		DictionaryWord lion = new DictionaryWord("Lion", "A lion is a carnivorous wild animal. It can live for about 10 to 14 years",
 				resources.getDrawable(R.drawable.btn_lion) , resources.getDrawable( R.drawable.lion ));
 		ILearnApplication.dictionary.addWord(lion);
 
-		DictionaryWord cow = new DictionaryWord("Cow", "A Cow is a domestic animal. It is usually raised for meat, milk and sometimes" +
+		DictionaryWord cow = new DictionaryWord("Cow", "A Cow is a domestic animal. It is usually kept for meat, milk and sometimes" +
 				" for leather, dung and pulling carts and plows.",
 				resources.getDrawable(R.drawable.btn_cow), resources.getDrawable( R.drawable.cow ));
 		ILearnApplication.dictionary.addWord(cow);
 
-		DictionaryWord ram = new DictionaryWord("Ram", "Ram Description",
+		DictionaryWord ram = new DictionaryWord("Ram", "A Ram is a domestic animal. It is usually kept for meat, wool and in some places it provides milk",
 				resources.getDrawable(R.drawable.btn_ram), resources.getDrawable( R.drawable.ram ));
 		ILearnApplication.dictionary.addWord( ram);
 		
