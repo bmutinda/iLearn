@@ -17,7 +17,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
 	Context context;
 
 	// Database Version
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 	// Database Name
 	private static final String DATABASE_NAME = "REBMOS_ILEARN_APP";
@@ -214,8 +214,15 @@ public class DatabaseManager extends SQLiteOpenHelper implements Constants {
 		String strDate = sdf.format(new Date());
 		values.put( KEY_DATE_CREATED, strDate );
 		AppLogger.logError("Adding score with details...."+values.toString() );
-		db.insert(TABLE_SCORES, null, values);
-		db.close(); 
+		try{
+			db.insert(TABLE_SCORES, null, values);
+			
+		}catch( Exception e ){
+			AppLogger.logError( "Adde exception ::: "+e.getLocalizedMessage() );
+			e.printStackTrace();
+		}finally{
+			db.close(); 
+		}
 	}
 	
 	

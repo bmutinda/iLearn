@@ -34,8 +34,8 @@ public class ILearnApplication extends Application {
 				resources.getDrawable(R.drawable.btn_zebra) , resources.getDrawable( R.drawable.zebra ));
 		ILearnApplication.dictionary.addWord(zebra);
 
-		DictionaryWord dog = new DictionaryWord("A dog is a domestic animal. It protects humans at night",
-				"Dog Description", resources.getDrawable(
+		DictionaryWord dog = new DictionaryWord("Dog",
+				"A dog is a domestic animal. It protects humans at night", resources.getDrawable(
 						R.drawable.btn_dog), resources.getDrawable( R.drawable.dog ));
 		ILearnApplication.dictionary.addWord( dog );
 
