@@ -11,8 +11,6 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 
 import com.parse.Parse;
-import com.parse.ParseACL;
-import com.parse.ParseUser;
 
 public class ILearnApplication extends Application {
 
@@ -57,7 +55,7 @@ public class ILearnApplication extends Application {
 			Parse.enableLocalDatastore(getApplicationContext());
 		       
 			Parse.initialize( this, Constants.PARSE_APP_ID, Constants.PARSE_APP_KEY ); 
-			 
+			/* 
 	        // For security purposes 
 	    	ParseUser.enableAutomaticUser(); // if this is enabled, we wont be able to logout
 	    	ParseACL defaultACL = new ParseACL();
@@ -65,6 +63,7 @@ public class ILearnApplication extends Application {
 	    	defaultACL.setPublicReadAccess(true);
 	    	defaultACL.setPublicWriteAccess(true);
 	    	ParseACL.setDefaultACL(defaultACL, true);
+	    	*/
 	    	
 		}catch( Exception e){
 			AppLogger.logError( "Parse error::: "+e.getLocalizedMessage() );
